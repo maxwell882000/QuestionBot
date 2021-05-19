@@ -1,0 +1,34 @@
+{% extends 'layouts/base.html' %}
+{% block title %}{{ channel.channel_name }} - Викторины{% endblock %}
+{% block breadcrumbs %}
+    <span class="breadcrumb-item">{{ channel.channel_name }}</span>
+    <span class="breadcrumb-item active">Викторины</span>
+{% endblock %}
+{% block content %}
+    <div class="py-3 d-flex justify-content-end">
+        <a href="{{ url_for('admin.remove_channel', channel_id=channel.id) }}" class="btn btn-alt-danger btn-rounded" data-toggle="popover" title="Внимание!" data-placement="bottom" data-content="Удаление канала приведёт к безвозвратному удалению всех данных, связанных с ним, включая викторины, тесты и рейтинги.">
+            <i class="si si-trash mr-5"></i> Удалить канал
+        </a>
+    </div>
+    <div class="block">
+        <div class="block-header block-header-default">
+            <h3 class="block-title">Викторины</h3>
+            <div class="block-options">
+                <a href="{{ url_for('admin.create_quiz', channel_id=channel.id) }}" class="btn-block-option"><i class="si si-plus"></i> Создать</a>
+            </div>
+        </div>
+        <div class="block-content">
+            {% if quizzes %}
+                <ul class="list-group list-group-flush mb-20">
+                    {% for quiz in quizzes %}
+                        <a href="{{ url_for('admin.quizzes_tests', quiz_id=quiz.id) }}" class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ quiz.start_date|date }} - {{ quiz.end_date|date }}
+                            <span class="badge badge-primary badge-pill" data-toggle="tooltip" title="Всего тестов">{{ quiz.tests.count() }}</span>
+                        </a>
+                    {% endfor %}
+                </ul>
+            {% else %}
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

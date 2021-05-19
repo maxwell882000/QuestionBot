@@ -1,0 +1,51 @@
+{% extends 'layouts/base.html' %}
+{% block title %}Рейтинги{% endblock %}
+{% block breadcrumbs %}
+    <a href="{{ url_for('admin.channel_quizzes', channel_id=quiz.channel_id) }}" class="breadcrumb-item">{{ quiz.channel.channel_name }}</a>
+    <a href="{{ url_for('admin.quizzes_tests', quiz_id=quiz.id) }}" class="breadcrumb-item">{{ quiz.start_date|date }} - {{ quiz.end_date|date }}</a>
+    <span class="breadcrumb-item active">Рейтинги</span>
+{% endblock %}
+{% block content %}
+    <h3 class="content-heading">Рейтинг викторины {{ quiz.start_date|date }} - {{ quiz.end_date|date }}</h3>
+    <div class="block">
+        <div class="block-header block-header-default">
+            <h3 class="block-title">Рейтинги</h3>
+        </div>
+        <div class="block-content block-content-full">
+            <div class="table-responsive">
+                <table class="table table-hover table-vcenter">
+                    <thead>
+                        <tr>
+                            <th class="text-center text-primary">№</th>
+                            <th class="text-center">Имя</th>
+                            <th class="text-center">Юзернейм</th>
+                            <th class="text-center">Баллы</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user_points in users_points %}
+                            {% set user = user_points[0] %}
+                            {% set points = user_points[1] %}
+                            <tr {% if loop.first %}class="table-primary"{% endif %}>
+                                <td class="text-center text-primary">{{ loop.index }}</td>
+                                <td class="text-center">
+                                    {{ user.first_name }}{% if user.last_name %} {{ user.last_name }}{% endif %}
+                                </td>
+                                <td class="text-center">
+                                    {% if user.username %}
+                                        {{ user.username }}
+                                    {% else %}
+                                        Не указано
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge badge-pill badge-primary">{{ points }}</span>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

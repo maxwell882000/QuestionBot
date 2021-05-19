@@ -1,0 +1,28 @@
+{% extends 'layouts/base.html' %}
+{% block title %}{{ channel.channel_name }} - Участники{% endblock %}
+{% block breadcrumbs %}
+    <span class="breadcrumb-item">{{ channel.channel_name }}</span>
+    <span class="breadcrumb-item active">Участники</span>
+{% endblock %}
+{% block content %}
+    <div class="block">
+        <div class="block-header">
+            <h3 class="block-title">Участники канала <strong>{{ channel.channel_title }}</strong>. <br> <small class="text-muted">Здесь отображены только те пользователи, которые принимали участие в викторинах.</small></h3>
+        </div>
+        <div class="block-content">
+            {% if members %}
+                <ul class="list-group list-group-flush mb-20">
+                    {% for member in members %}
+                        <a href="{{ url_for('admin.show_user', user_id=member.id, channel_id=channel.id) }}" class="list-group-item">
+                            {{ member|user }}
+                            {% if member.username %}
+                                - <span class="muted-text">{{ member.username }}</span>
+                            {% endif %}
+                        </a>
+                    {% endfor %}
+                </ul>
+            {% else %}
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

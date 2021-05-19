@@ -1,0 +1,24 @@
+{% extends 'layouts/base.html' %}
+{% block title %}{{ member|user }}{% endblock %}
+{% block breadcrumbs %}
+    <a href="{{ url_for('admin.channel_users', channel_id=channel.id) }}" class="breadcrumb-item">{{ channel.channel_name }}</a>
+    <span class="breadcrumb-item active">{{ member|user }}</span>
+{% endblock %}
+{% block content %}
+    <div class="block">
+        <div class="block-header block-header-default">
+            <h3 class="block-title">{{ member|user }}</h3>
+        </div>
+        <div class="block-content">
+            <section class="user-info">
+                <p><span class="font-weight-bold">Юзернейм: </span>{% if member.username %}@{{ member.username }}{% else %}Не указан{% endif %}</p>
+            </section>
+            <section class="answers-last-quiz">
+                <h4 class="font-weight-bold">История ответов в текущей викторине</h4>
+                <p><span class="font-weight-bold text-primary">Всего ответов: </span>{{ answers_count }}</p>
+                <p><span class="font-weight-bold text-primary">Правильных ответов: </span>{{ answers_right_count }}</p>
+                <p><span class="font-weight-bold text-primary">Заработано очков: </span>{{ answers_points_sum }}</p>
+            </section>
+        </div>
+    </div>
+{% endblock %}

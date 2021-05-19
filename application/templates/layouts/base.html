@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <!-- Meta tags -->
+    <meta name="description" content="Административная панель Telegram бота-опросника в каналах">
+    <meta name="author" content="Verve Intelligence Development">
+    <meta name="robots" content="noindex, nofollow">
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/codebase.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/themes/corporate.min.css') }}">
+    {% block styles %}
+    {% endblock %}
+    
+    <!-- Page title -->
+    <title>{% block title %}{% endblock %} | QuestionBot</title>
+</head>
+<body>
+    <div id="page-container" class="sidebar-o side-scroll page-header-modern main-content-boxed">
+        <nav id="sidebar">
+            <div id="sidebar-scroll">
+                <div id="sidebar-content">
+                    <div class="content-header content-header-fullrow px-15">
+                        <!-- Mini Mode -->
+                        <div class="content-header-section sidebar-mini-visible-b">
+                            <!-- Logo -->
+                            <span class="content-header-item font-w700 font-size-xl float-left animated fadeIn">
+                                <span class="text-dual-primary-dark">Q</span><span class="text-primary">Bot</span>
+                            </span>
+                            <!-- END Logo -->
+                        </div>
+                        <!-- END Mini Mode -->
+                        <!-- Normal Mode -->
+                        <div class="content-header-section text-center align-parent sidebar-mini-hidden">
+                            <!-- Close Sidebar, Visible only on mobile screens -->
+                            <button type="button" class="btn btn-circle btn-dual-secondary d-lg-none align-v-r" data-toggle="layout" data-action="sidebar_close">
+                                <i class="fa fa-times text-danger"></i>
+                            </button>
+                            <!-- END Close Sidebar -->
+
+                            <!-- Logo -->
+                            <div class="content-header-item">
+                                <a class="link-effect font-w700" href="{{ url_for('admin.index') }}">
+                                    <i class="si si-question text-primary"></i>
+                                    <span class="font-size-xl text-dual-primary-dark">Question</span><span class="font-size-xl text-primary">Bot</span>
+                                </a>
+                            </div>
+                            <!-- END Logo -->
+                        </div>
+                        <!-- END Normal Mode -->
+                    </div>
+                    <!-- END Side Header -->
+                    <!-- Side User -->
+                    <div class="content-side content-side-full content-side-user px-10 align-parent">
+                        <!-- Visible only in mini mode -->
+                        <div class="sidebar-mini-visible-b align-v animated fadeIn">
+                            <img class="img-avatar img-avatar32" src="{{ url_for('static', filename="assets/img/avatar.jpg") }}" alt="{{ current_user.email }}">
+                        </div>
+                        <!-- END Visible only in mini mode -->
+
+                        <!-- Visible only in normal mode -->
+                        <div class="sidebar-mini-hidden-b text-center">
+                            <img class="img-avatar" src="{{ url_for('static', filename="assets/img/avatar.jpg") }}" alt="{{ current_user.email }}">
+                            <ul class="list-inline mt-10">
+                                <li class="list-inline-item">
+                                    <span class="text-dual-primary-dark text-bold">{{ current_user.email }}</span>
+                                </li>
+                                <li class="list-inline-item">
+                                    <a class="link-effect text-dual-primary-dark" href="{{ url_for('auth.logout') }}">
+                                        <i class="si si-logout"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        <!-- END Visible only in normal mode -->
+                    </div>
+                    <!-- END Side User -->
+
+                    <!-- Side Navigation -->
+                    <div class="content-side content-side-full">
+                        <ul class="nav-main">
+                            <li class="nav-main-heading"><span class="sidebar-mini-visible">К</span><span class="sidebar-mini-hidden">Каналы</span></li>
+                            {% for channel in channels %}
+                                <li>
+                                    <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-bubble"></i><span class="sidebar-mini-hide">{{ channel.channel_title }}</span></a>
+                                    <ul>
+                                        <li>
+                                            <a href="{{ url_for('admin.channel_quizzes', channel_id=channel.id) }}">Тесты / опросы</a>
+                                        </li>
+                                        <li>
+                                            <a href="{{ url_for('admin.channel_users', channel_id=channel.id) }}">Пользователи</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            {% endfor %}
+                            <li>
+                                <a href="{{ url_for('admin.create_channel') }}"><i class="si si-plus"></i><span class="sidebar-mini-hide">Добавить</span></a>
+                            </li>
+                            <li class="nav-main-heading"><span class="sidebar-mini-visible">C</span><span class="sidebar-mini-hidden">Система</span></li>
+                            <li>
+                                <a href="{{ url_for('admin.settings') }}"><i class="si si-settings"></i><span class="sidebar-mini-hide">Настройки</span></a>
+                            </li>
+                        </ul>
+                    </div>
+                    <!-- END Side Navigation -->
+                </div>
+            </div>
+        </nav>
+        <!-- END Sidebar -->
+
+        <!-- Header -->
+        <header id="page-header">
+            <div class="content-header">
+                <!-- Left Section -->
+                    <div class="content-header-section">
+                        <!-- Toggle Sidebar -->
+                        <!-- Layout API, functionality initialized in Codebase() -> uiApiLayout() -->
+                        <button type="button" class="btn btn-circle btn-dual-secondary" data-toggle="layout" data-action="sidebar_toggle">
+                            <i class="fa fa-navicon"></i>
+                        </button>
+                        <!-- END Toggle Sidebar -->
+                    </div>
+                <!-- END Left Section -->
+
+                <!-- Right Section -->
+                <div class="content-header-section">
+                    <!-- User Dropdown -->
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-rounded btn-dual-secondary" id="page-header-user-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            {{ current_user.email }}<i class="fa fa-angle-down ml-5"></i>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-right min-width-150" aria-labelledby="page-header-user-dropdown">
+                            <a class="dropdown-item" href="{{ url_for('auth.logout') }}">
+                                <i class="si si-logout mr-5"></i> Выйти
+                            </a>
+                        </div>
+                    </div>
+                    <!-- END User Dropdown -->
+                </div>
+                <!-- END Right Section -->
+            </div>
+            <!-- Header Loader -->
+            <div id="page-header-loader" class="overlay-header bg-primary">
+                <div class="content-header content-header-fullrow text-center">
+                    <div class="content-header-item">
+                        <i class="fa fa-sun-o fa-spin text-white"></i>
+                    </div>
+                </div>
+            </div>
+            <!-- END Header Loader -->
+        </header>
+        <!-- Main Container -->
+        <main id="main-container">
+            <!-- Page Content -->
+            {% if request.endpoint != 'admin.index' %}
+            <div class="content">
+                <nav class="breadcrumb bg-white push">
+                    <a class="breadcrumb-item" href="{{ url_for('admin.index') }}">QuestionBot</a>
+                    {% block breadcrumbs %} {% endblock %}
+                </nav>
+                {% block content %}{% endblock %}
+            </div>
+            {% else %}
+                {% block hero %}{% endblock %}
+            {% endif %}
+            <!-- END Page Content -->
+        </main>
+        <!-- END Main Container -->
+    </div>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename="assets/js/core/jquery.min.js") }}"></script>
+    <script src="{{ url_for('static', filename="assets/js/core/popper.min.js") }}"></script>
+    <script src="{{ url_for('static', filename="assets/js/core/jquery.slimscroll.min.js") }}"></script>
+    <script src="{{ url_for('static', filename="assets/js/core/jquery.scrollLock.min.js") }}"></script>
+    <script src="{{ url_for('static', filename="assets/js/core/bootstrap.min.js") }}"></script>
+    <script src="{{ url_for('static', filename="assets/js/core/jquery.appear.min.js") }}"></script>
+    <script src="{{ url_for('static', filename="assets/js/codebase.js") }}"></script>
+    {% block scripts %}
+    {% endblock %}
+</body>
+</html>

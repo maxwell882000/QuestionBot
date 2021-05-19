@@ -1,0 +1,63 @@
+{% extends 'layouts/base.html' %}
+{% block title %}Настройки{% endblock %}
+{% block breadcrumbs %}
+    <span class="breadcrumb-item active">Настройки</span>
+{% endblock %}
+{% block content %}
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+        <div class="block">
+            <div class="block-header block-header-default">
+                <h3 class="block-title">Настройки викторин</h3>
+                <div class="block-options">
+                    <button type="submit" class="btn btn-sm btn-alt-primary"><i class="fa fa-check"></i> Сохранить</button>
+                </div>
+            </div>
+            <div class="block-content">
+                <div class="form-group {% if form.right_answer_point.errors %}is-invalid{% endif %}">
+                    <div class="form-material floating">
+                        {{ form.right_answer_point(class="form-control") }}
+                        {{ form.right_answer_point.label }}
+                        {% for error in form.right_answer_point.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <div class="block">
+        <div class="block-header block-header-default">
+            <h3 class="block-title">Настройки Telegram бота</h3>
+        </div>
+        <div class="block-content">
+            <section class="bot-state">
+                <h4 class="text-primary">Текущее состояние бота</h4>
+                <div class="block block-shadow text-center">
+                    <div class="block-content">
+                        <p class="mt-5">
+                            <i class="{% if bot_state == 'paused' %}si si-control-pause{% elif bot_state == 'work' %}si si-control-play{% elif bot_state == 'stopped' %}fa fa-stop{% endif %} fa-4x"></i>
+                        </p>
+                        <p class="font-w600">
+                            {{ bot_state|bot_state }}
+                        </p>
+                    </div>
+                </div>
+            </section>
+            <section class="bot-actions">
+                <h4 class="text-primary">Управление ботом</h4>
+                <div class="d-flex justify-content-around align-items-center mb-20 flex-wrap">
+                    <a href="{{ url_for('admin.start_bot') }}" class="btn btn-lg btn-alt-primary {% if bot_state == 'work' %}disabled{% endif %}" data-toggle="popover" title="Запустить бота" data-position="top" data-content="Если бот был поставлен на паузу, публикация тестов продолжиться">
+                        <i class="si si-control-play"></i> Запустить
+                    </a>
+                    <a href="{{ url_for('admin.pause_bot') }}" class="btn btn-lg btn-alt-warning {% if bot_state == 'paused' %}disabled{% endif %}" data-toggle="popover" title="Поставить на паузу" data-position="top" data-content="При установке на паузу, бот перенстанет отвечать пользователям и сохранит запланированные публикации тестов">
+                        <i class="si si-control-pause"></i> Пауза
+                    </a>
+                    <a href="{{ url_for('admin.stop_bot') }}" class="btn btn-lg btn-alt-danger {% if bot_state == 'stopped' %}disabled{% endif %}" data-toggle="popover" title="Остановить бота" data-position="top" data-content="Внимание! Остановка бота приведёт к удалению всех запланированных публикаций тестов, но сохранит сами тесты и перестанет отвечать пользователям">
+                        <i class="fa fa-stop"></i> Стоп
+                    </a>
+                </div>
+            </section>
+        </div>
+    </div>
+{% endblock %}

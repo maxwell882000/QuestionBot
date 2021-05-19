@@ -1,0 +1,15 @@
+{% extends 'layouts/base.html' %}
+{% block title %}Главная{% endblock %}
+{% block hero %}
+    <!-- Hero -->
+    <div class="bg-image bg-image-bottom" style="background-image: url('{{ url_for('static', filename='assets/img/photo34@2x.jpg') }}')">
+        <div class="bg-primary-dark-op">
+            <div class="content content-top text-center overflow-hidden">
+                <div class="pt-50 pb-20">
+                    <h1 class="font-w700 text-white mb-10 invisible" data-toggle="appear" data-class="animated fadeInUp">Административная панель</h1>
+                    <h2 class="h4 font-w400 text-white-op invisible font-weight-bold" data-toggle="appear" data-class="animated fadeInUp">Добро пожаловать, {{ current_user.email }}!</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

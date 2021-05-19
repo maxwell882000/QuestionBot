@@ -1,0 +1,57 @@
+{% extends 'layouts/base.html' %}
+{% block title %}Тесты{% endblock %}
+{% block breadcrumbs %}
+    <a href="{{ url_for('admin.channel_quizzes', channel_id=quiz.channel_id) }}" class="breadcrumb-item">{{ quiz.channel.channel_name }}</a>
+    <span class="breadcrumb-item">{{ quiz.start_date|date }} - {{ quiz.end_date|date }}</span>
+{% endblock %}
+{% block content %}
+    <div class="py-3">
+        <div class="d-flex justify-content-between align-items-center mb-10">
+            <a href="{{ url_for('admin.create_test', quiz_id=quiz.id) }}" class="btn btn-alt-success btn-rounded">
+                <i class="si si-plus mr-5"></i> Добавить тест
+            </a>
+            <a href="{{ url_for('admin.remove_quiz', quiz_id=quiz.id, channel_id=quiz.channel_id) }}" class="btn btn-alt-danger btn-rounded" data-toggle="popover" title="Внимание!" data-placement="bottom" data-content="Это действие удалит все данные, связанные с этой викториной, включая тесты и рейтинги">
+                <i class="si si-trash mr-5"></i> Удалить викторину
+            </a>
+        </div>
+    </div>
+    <h2 class="content-heading">{{ quiz.start_date|date }} - {{ quiz.end_date|date }}</h2>
+    <div class="row">
+        {% for test in tests %}
+            <div class="col-md-3 col-sm-12">
+                <div class="block block-themed block-shadow">
+                    <div class="block-header bg-primary-dark">
+                        <h3 class="block-title">{{ test.question }}</h3>
+                        <div class="block-options">
+                            <a href="{{ url_for('admin.show_test', test_id=test.id, quiz_id=test.quiz_id) }}" class="btn-block-option" data-toggle="tooltip" title="Подробнее">
+                                <i class="fa fa-pencil"></i>
+                            </a>
+                            <a href="{{ url_for('admin.remove_test', test_id=test.id, quiz_id=test.quiz_id) }}" class="btn-block-option" data-toggle="tooltip" title="Удалить">
+                                <i class="si si-trash"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="block-content">
+                        <p><span class="font-weight-bold">Дата публикации:</span> {{ test.publish_date|datetime }} {% if test.published %} <i class="fa fa-check ml-5"></i> {% endif %}</p>
+                        <div class="mt-20">
+                            <ul class="list-group list-group-flush {% if not test.file_path %}mb-20{% endif %}">
+                                {% for option in test.options.all() %}
+                                    <li class="list-group-item {% if option.is_answer %}d-flex justify-content-between align-items-center{% endif %}">
+                                        {{ option.value }}
+                                        {% if option.is_answer %}
+                                            <span class="badge badge-secondary badge-pill">&#10003;</span>
+                                        {% endif %}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% if test.file_path %}
+                            <p class="mt-20"><span class="font-weight-bold">Файл: </span>{{ test.file_path|filename }}</p>
+                        {% endif %}
+                        <p class="mt-20"><span class="font-weight-bold">Ответов: </span><span class="badge badge-secondary badge-pill">{{ test.answers.count() }}</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

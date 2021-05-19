@@ -1,0 +1,36 @@
+{% extends 'layouts/base.html' %}
+{% block title %}Добавить канала{% endblock %}
+{% block breadcrumbs %}
+    <span class="breadcrumb-item active">Добавить канал</span>
+{% endblock %}
+{% block content %}
+    <div class="d-flex justify-content-center align-items-center">
+        <form action="" method="post">
+            {{ form.hidden_tag() }}
+            <div class="block">
+                <div class="block-header block-header-default">
+                    <h3 class="block-title">Добавить канал</h3>
+                    <div class="block-options">
+                        <button type="submit" class="btn btn-sm btn-alt-primary">
+                            <i class="fa fa-check"></i> Сохранить
+                        </button>
+                    </div>
+                </div>
+                <div class="block-content">
+                    <div class="form-group row {% if form.channel_name_url.errors %}is-invalid{% endif %}">
+                        <div class="col-md-12">
+                            <div class="form-material floating form-material-primary">
+                                {{ form.channel_name_url(class="form-control") }}
+                                {{ form.channel_name_url.label }}
+                                <div class="form-text text-muted text-center">Сначала добавьте бота <strong>@ChannelQuestionBot</strong> в ваш канал, убедитесь, что он имеет доступ к отпарвке и удалению сообщений, затем введите ссылку или юзернейм (он начинается со знака "@") канала в это поле</div>
+                                {% for error in form.channel_name_url.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}

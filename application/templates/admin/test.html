@@ -1,0 +1,146 @@
+{% extends 'layouts/base.html' %}
+{% block title %}{{ test.question }}{% endblock %}
+{% block breadcrumbs %}
+    <a href="{{ url_for('admin.channel_quizzes', channel_id=quiz.channel_id) }}" class="breadcrumb-item">{{ quiz.channel.channel_name }}</a>
+    <a href="{{ url_for('admin.quizzes_tests', quiz_id=quiz.id) }}" class="breadcrumb-item">{{ quiz.start_date|datetime }} - {{ quiz.end_date|datetime }}</a>
+    <span class="breadcrumb-item active">{{ test.question }}</span>
+{% endblock %}
+{% block styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/plugins/bootstrap-datepicker3.min.css') }}">
+{% endblock %}
+{% block content %}
+    <form action="" method="post" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        {{ form.start_date() }}
+        {{ form.end_date() }}
+        <div class="block">
+            <div class="block-header block-header-default">
+                <h3 class="block-title">{{ test.question }}</h3>
+                <div class="block-options">
+                    <button type="submit" class="btn btn-sm btn-alt-primary" {% if test.published %}disabled{% endif %}><i class="fa fa-check"></i> Сохранить</button>
+                </div>
+            </div>
+            <div class="block-content">
+                <div class="form-group {% if form.question.errors %}is-invalid{% endif %}">
+                    <div class="form-material form-material-primary floating">
+                        {{ form.question(class="form-control") }}
+                        {{ form.question.label }}
+                        {% for error in form.question.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 col-sm-12">
+                        <div class="form-group {% if form.publish_date.errors %}is-invalid{% endif %}">
+                            <div class="form-material floating">
+                                {{ form.publish_date(class='js-datepicker form-control', **{'data-week-start':'1', 'data-autoclose':'true', 'data-today-highlight':'true', 'data-date-format': 'dd.mm.yyyy', 'readonly': 'readonly'}) }}
+                                {{ form.publish_date.label }}
+                                {% for error in form.publish_date.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-sm-12">
+                        <div class="form-group {% if form.publish_time.errors %}is-invalid{% endif %}">
+                            <div class="form-material floating">
+                                {{ form.publish_time(class='js-masked-time form-control') }}
+                                {{ form.publish_time.label }}
+                                {% for error in form.publish_time.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-12">{% if test.file_path %}Изменить файл. Текущий - {{ test.file_path|filename }}.{% else %}Прикрепить файл. Максимальный размер - 10 Мб{% endif %}</label>
+                    <div class="col-12">
+                        {{ form.file }}
+                    </div>
+                </div>
+                <div class="mt-20 options-section">
+                    <h2 class="font-w400"><small>Варианты ответов</small></h2>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <p class="text-muted m-0">Добавьте варианты ответов и укажите праивльный ответ</p>
+                        <a href="#" class="btn btn-small btn-alt-primary" id="addOptionBtn">
+                            <i class="si si-plus"></i> Добавить
+                        </a>
+                    </div>
+                    <div id="testOptionsList">
+                        {% for option in form.options %}
+                            <div class="d-flex justify-content-between align-items-center test-option-item" id="option#{{ loop.index0 }}">
+                                <label class="css-control css-control-secondary css-checkbox">
+                                    {{ option.is_answer(class='css-control-input') }}
+                                    <span class="css-control-indicator" data-toggle="tooltip" title="Отметить, как правильный ответ"></span>
+                                </label>
+                                <div class="option-value w-75">
+                                    <div class="form-group {% if option.value.errors %}is-invalid{% endif %}">
+                                        <div class="form-material">
+                                            {{ option.value(class='form-control') }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="option-delete">
+                                    <a href="#" class="btn btn-small btn-alt-danger btn-rounded" data-number="option#{{ loop.index0 }}" data-toggle="tooltip" title="Удалить">
+                                        <i class="si si-trash"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <div class="block mt-10">
+        <div class="block-header block-header-default">
+            <h3 class="block-title">История правильных ответов | {{ answers|length }}</h3>
+        </div>
+        <div class="block-content">
+            {% if answers %}
+                <ul class="list-group list-group-flush mb-20">
+                    {% for answer in answers %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ answer.user.first_name }}{% if answer.user.last_name %} {{ answer.user.last_name }}{% endif %}{% if answer.user.username %} - @{{ answer.user.username }}{% endif %}
+                            <span class="badge badge-primary badge-pill">{{ answer.created_at|convert_utc_asia|datetime }}</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="font-weight-bold text-center">Правильных ответов ещё не было.</p>
+            {% endif %}
+        </div>
+    </div>
+    <template id="option-template">
+        <div class="d-flex justify-content-between align-items-center test-option-item" id="option##optionNumber">
+            <label class="css-control css-control-secondary css-checkbox">
+                <input type="checkbox" name="options-#optionNumber-is_answer" id="options-#optionNumber-is_answer" class="css-control-input">
+                <span class="css-control-indicator" data-toggle="tooltip" title="Отметить, как правильный ответ"></span>
+            </label>
+            <div class="option-value w-75">
+                <div class="form-group">
+                    <div class="form-material">
+                        <input type="text" name="options-#optionNumber-value" required id="options-#optionNumber-value" class="form-control">
+                    </div>
+                </div>
+            </div>
+            <div class="option-delete">
+                <a href="#" class="btn btn-small btn-alt-danger btn-rounded" data-number="option##optionNumber" data-toggle="tooltip" title="Удалить">
+                    <i class="si si-trash"></i>
+                </a>
+            </div>
+        </div>
+    </template>
+{% endblock %}
+{% block scripts %}
+    <script src="{{ url_for('static', filename='assets/js/plugins/bootstrap-datepicker.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='assets/js/plugins/jquery.maskedinput.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='assets/js/testform.js') }}"></script>
+    <script>
+        jQuery(function () {
+            Codebase.helpers(['datepicker', 'masked-inputs']);
+        });
+    </script>
+{% endblock %}

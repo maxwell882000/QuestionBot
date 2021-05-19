@@ -1,0 +1,28 @@
+import shelve
+from config import basedir
+import os
+
+
+filename = os.path.join(basedir, 'settings.data')
+
+
+def _get_value(key: str):
+    settings = shelve.open(filename)
+    value = settings[key]
+    settings.close()
+    return value
+
+
+def _set_value(key: str, value):
+    settings = shelve.open(filename)
+    settings[key] = value
+    settings.close()
+
+
+def get_right_answer_points() -> int:
+    return _get_value('right_answ')
+
+
+def set_right_answer_points(points):
+    _set_value('right_answer_points', points)
+

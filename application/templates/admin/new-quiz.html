@@ -1,0 +1,53 @@
+{% extends "layouts/base.html" %}
+{% block title %}Новая викторина{% endblock %}
+{% block breadcrumbs %}
+    <a href="{{ url_for('admin.channel_quizzes', channel_id=channel.id) }}" class="breadcrumb-item">{{ channel.channel_name }}</a>
+    <span class="breadcrumb-item active">Новая викторина</span>
+{% endblock %}
+{% block styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/plugins/bootstrap-datepicker3.min.css') }}">
+{% endblock %}
+{% block scripts %}
+    <script src="{{ url_for('static', filename='assets/js/plugins/bootstrap-datepicker.min.js') }}"></script>
+    <script>
+        jQuery(function () {
+            Codebase.helpers(['datepicker']);
+        });
+    </script>
+{% endblock %}
+{% block content %}
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+        <div class="block">
+            <div class="block-header block-header-default">
+                <h3 class="block-title">Новая викторина</h3>
+                <div class="block-options">
+                    <button type="submit" class="btn btn-sm btn-alt-primary">
+                        <i class="fa fa-check"></i> Сохранить
+                    </button>
+                </div>
+            </div>
+            <div class="block-content">
+                <div class="form-group row">
+                    <label class="col-12" for="start_date">Временной промежуток</label>
+                    <div class="col-sm-12">
+                        <div class="input-daterange input-group" data-date-format="dd.mm.yyyy" data-week-start="1" data-autoclose="true" data-today-highlight="true">
+                            {{ form.start_date(class='form-control', **{'placeholder':'От', 'data-week-start':'1', 'data-autoclose':'true', 'data-today-highlight':'true', 'readonly': 'readonly'}) }}
+                            <span class="input-group-addon font-w600 px-20">до</span>
+                            {{ form.end_date(class='form-control', **{'placeholder':'До', 'data-week-start':'1', 'data-autoclose':'true', 'data-today-highlight':'true', 'readonly': 'readonly'}) }}
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group {% if form.top_count.errors %}is-invalid{% endif %}">
+                    <div class="form-material floating form-material-primary">
+                        {{ form.top_count(class='form-control') }}
+                        {{ form.top_count.label }}
+                        {% for error in form.top_count.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+{% endblock %}
